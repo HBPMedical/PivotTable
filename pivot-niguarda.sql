@@ -68,5 +68,5 @@ end loop;
 
 -- by ucommenting/commenting one of these two lines the result is either stored in a CSV or in a table
 COPY (Select * From new_table) To '/tmp/Niguarda_flattened.csv' With CSV DELIMITER ',' HEADER;
---execute format('DROP TABLE IF EXISTS ' || table_name);
+execute format('DROP TABLE IF EXISTS ' || table_name);
 end;$$
