@@ -18,26 +18,9 @@ query := '''';
 usedid := '''';
 table_name := ''new_table'';
 
--- collect all concept_cds in order to obtain the available columns
-for concept, valtype in 
-	select distinct on (concept_cd) concept_cd, valtype_cd 
-	from observation_fact where concept_cd != ''-1''
-loop
-CASE
-    WHEN ''T''=valtype 
-    THEN 
-	type_name := '' text'';
-    ELSE 
-	type_name := '' numeric(18,5)'';
-END case;
-if query = '''' then
-	query := query || ''"'' || concept || ''"'' || type_name ;
-else
-	query := query || '','' || ''"'' || concept || ''"'' || type_name ;
-end if;
-end loop;
 
-query := ''CREATE TABLE '' || table_name || ''( id integer, pid integer, birth_year integer, sex text, '' || query || '');'';
+query := ''CREATE TABLE '' || table_name || ''( id integer, pid integer, birth_year integer, sex text, "rightinflatvent" text,"leftinflatvent" text,"rightlateralventricle" text,"leftlateralventricle" text,"3rdventricle" text,"4thventricle" text,"csfglobal" text,"rightcerebellumwhitematter" text,"leftcerebellumwhitematter" text,"rightcerebralwhitematter" text,"leftcerebralwhitematter" text,"opticchiasm" text,"cerebellarvermallobulesviiix" text,"cerebellarvermallobulesvivii" text,"cerebellarvermallobulesiv" text,"leftcerebellumexterior" text,"rightcerebellumexterior" text,"rightbasalforebrain" text,"leftbasalforebrain" text,"rightaccumbensarea" text,"leftaccumbensarea" text,"rightcaudate" text,"leftcaudate" text,"rightpallidum" text,"leftpallidum" text,"rightputamen" text,"leftputamen" text,"rightamygdala" text,"leftamygdala" text,"righthippocampus" text,"lefthippocampus" text,"rightthalamusproper" text,"leftthalamusproper" text,"rightacgganteriorcingulategyrus" text,"leftacgganteriorcingulategyrus" text,"rightententorhinalarea" text,"leftententorhinalarea" text,"rightmcggmiddlecingulategyrus" text,"leftmcggmiddlecingulategyrus" text,"rightpcggposteriorcingulategyrus" text,"leftpcggposteriorcingulategyrus" text,"rightphgparahippocampalgyrus" text,"leftphgparahippocampalgyrus" text,"rightfugfusiformgyrus" text,"leftfugfusiformgyrus" text,"rightitginferiortemporalgyrus" text,"leftitginferiortemporalgyrus" text,"rightmtgmiddletemporalgyrus" text,"leftmtgmiddletemporalgyrus" text,"rightppplanumpolare" text,"leftppplanumpolare" text,"rightptplanumtemporale" text,"leftptplanumtemporale" text,"rightstgsuperiortemporalgyrus" text,"leftstgsuperiortemporalgyrus" text,"righttmptemporalpole" text,"lefttmptemporalpole" text,"rightttgtransversetemporalgyrus" text,"leftttgtransversetemporalgyrus" text,"rightcalccalcarinecortex" text,"leftcalccalcarinecortex" text,"rightcuncuneus" text,"leftcuncuneus" text,"rightioginferioroccipitalgyrus" text,"leftioginferioroccipitalgyrus" text,"rightliglingualgyrus" text,"leftliglingualgyrus" text,"rightmogmiddleoccipitalgyrus" text,"leftmogmiddleoccipitalgyrus" text,"rightocpoccipitalpole" text,"leftocpoccipitalpole" text,"rightofugoccipitalfusiformgyrus" text,"leftofugoccipitalfusiformgyrus" text,"rightsogsuperioroccipitalgyrus" text,"leftsogsuperioroccipitalgyrus" text,"rightangangulargyrus" text,"leftangangulargyrus" text,"rightmpogpostcentralgyrusmedialsegment" text,"leftmpogpostcentralgyrusmedialsegment" text,"rightpcuprecuneus" text,"leftpcuprecuneus" text,"rightpogpostcentralgyrus" text,"leftpogpostcentralgyrus" text,"rightsmgsupramarginalgyrus" text,"leftsmgsupramarginalgyrus" text,"rightsplsuperiorparietallobule" text,"leftsplsuperiorparietallobule" text,"rightaorganteriororbitalgyrus" text,"leftaorganteriororbitalgyrus" text,"rightcocentraloperculum" text,"leftcocentraloperculum" text,"rightfofrontaloperculum" text,"leftfofrontaloperculum" text,"rightfrpfrontalpole" text,"leftfrpfrontalpole" text,"rightgregyrusrectus" text,"leftgregyrusrectus" text,"rightlorglateralorbitalgyrus" text,"leftlorglateralorbitalgyrus" text,"rightmfcmedialfrontalcortex" text,"leftmfcmedialfrontalcortex" text,"rightmfgmiddlefrontalgyrus" text,"leftmfgmiddlefrontalgyrus" text,"rightmorgmedialorbitalgyrus" text,"leftmorgmedialorbitalgyrus" text,"rightmprgprecentralgyrusmedialsegment" text,"leftmprgprecentralgyrusmedialsegment" text,"rightmsfgsuperiorfrontalgyrusmedialsegment" text,"leftmsfgsuperiorfrontalgyrusmedialsegment" text,"rightopifgopercularpartoftheinferiorfrontalgyrus" text,"leftopifgopercularpartoftheinferiorfrontalgyrus" text,"rightorifgorbitalpartoftheinferiorfrontalgyrus" text,"leftorifgorbitalpartoftheinferiorfrontalgyrus" text,"rightpoparietaloperculum" text,"leftpoparietaloperculum" text,"rightporgposteriororbitalgyrus" text,"leftporgposteriororbitalgyrus" text,"rightprgprecentralgyrus" text,"leftprgprecentralgyrus" text,"rightscasubcallosalarea" text,"leftscasubcallosalarea" text,"rightsfgsuperiorfrontalgyrus" text,"leftsfgsuperiorfrontalgyrus" text,"rightsmcsupplementarymotorcortex" text,"leftsmcsupplementarymotorcortex" text,"righttrifgtriangularpartoftheinferiorfrontalgyrus" text,"lefttrifgtriangularpartoftheinferiorfrontalgyrus" text,"rightainsanteriorinsula" text,"leftainsanteriorinsula" text,"rightpinsposteriorinsula" text,"leftpinsposteriorinsula" text,"rightventraldc" text,"leftventraldc" text,"tiv" text,"brainstem" text,"subjectageyears" text,"subjectagemonths" text,"agegroup" text,"gender" text,"handedness" text,"clmcategory" text,"alzheimerbroadcategory" text,"parkinsonbroadcategory" text,"neurogenerativescategories" text,"adnicategory" text,"edsdcategory" text,"ppmicategory" text,"minimentalstate" text,"montrealcognitiveassessment" text,"updrstotal" text,"updrshy" text,"dataset" text
+);'';
 execute format(''DROP TABLE IF EXISTS '' || table_name);
 execute format(query);
 table_name := ''new_table'';
@@ -62,7 +45,7 @@ CASE
 		if ( usedid ~ currentid) then
 		execute format(''update '' || table_name  || '' set '' || ''"'' || concept || ''" = '' ||  num_val || '' where id = '' || id );
 		else
-		execute format(''insert into '' || table_name  || ''( id, pid, birth_year, sex, '' || ''"'' || concept || ''"'' || '') VALUES ('' || id || '','' || pid || '','' || year || '','''''' || sex || '''''','' ||  num_val || '')'');
+		execute format(''insert into '' || table_name  || ''( id, pid, birth_year, sex, '' || ''"'' || concept || ''"'' || '') VALUES ('' || id || '','' || pid || '','' || year || '','''''' || sex || '''''','''''' ||  num_val || '''''')'');
 		usedid := usedid || '','' || id ||'','';
 		end if;
 	end if;
@@ -71,7 +54,7 @@ END case;
 end loop;
 
 -- by ucommenting/commenting one of these two lines the result is either stored in a CSV or in a table
-COPY (Select * From new_table) To ''/tmp/Flat.csv'' With CSV DELIMITER '','' HEADER;
+COPY (Select * From new_table) To ''/tmp/FlatNiguarda.csv'' With CSV DELIMITER '','' HEADER;
 execute format(''DROP TABLE IF EXISTS '' || table_name);
 
 END' language plpgsql;
