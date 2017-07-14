@@ -1,20 +1,20 @@
 create or replace function pivotfunction() returns void as '
-Declare concept text;
-Declare valtype text;
-Declare type_name text;
-Declare query text;
-Declare table_name text;
-Declare char_val text;
-Declare num_val numeric(18,5);
-Declare usedid text;
-Declare currentid text;
-Declare sex text;
-Declare year integer;
-Declare startdate timestamp without time zone;
-Declare pid integer;
-Declare subjectageyears integer;
-Declare subjectagemonths integer;
-Declare gender text;
+DECLARE concept text;
+DECLARE valtype text;
+DECLARE type_name text;
+DECLARE query text;
+DECLARE table_name text;
+DECLARE char_val text;
+DECLARE num_val numeric(18,5);
+DECLARE usedid text;
+DECLARE currentid text;
+DECLARE sex text;
+DECLARE year integer;
+DECLARE startdate timestamp WITHOUT TIME ZONE;
+DECLARE pid integer;
+DECLARE subjectageyears integer;
+DECLARE subjectagemonths integer;
+DECLARE gender text;
 BEGIN
 query := '''';
 usedid := '''';
@@ -29,36 +29,40 @@ table_name := ''new_table'';
 for pid, startdate, concept, valtype, char_val, num_val, subjectageyears, subjectagemonths, gender in 
 	select observation_fact.patient_num, observation_fact.start_date, observation_fact.concept_cd, observation_fact.valtype_cd, observation_fact.tval_char, observation_fact.nval_num, visit_dimension.patient_age, extract(month from patient_dimension.birth_date), patient_dimension.sex_cd  
 	from observation_fact, patient_dimension, visit_dimension where observation_fact.patient_num=patient_dimension.patient_num and visit_dimension.encounter_num = observation_fact.encounter_num and concept_cd != ''-1''
-loop
+LOOP
 currentid := '','' || pid || '','';
 CASE
     WHEN ''T''=valtype 
     THEN 
-	IF coalesce(TRIM(char_val), '''') <> '''' and char_val is not null then
-		if ( usedid ~ currentid ) then
+	IF coalesce(TRIM(char_val), '''') <> '''' AND char_val IS NOT NULL THEN
+		IF ( usedid ~ currentid ) then
 		execute format(''update '' || table_name  || '' set '' || ''"'' || concept || ''" = '''''' ||  char_val || '''''' where pid = '' || pid );
-		else
+		ELSE
 		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, subjectagemonths, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','' || subjectagemonths || '','''''' || gender || '''''','''''' ||  char_val || '''''')'');
 		usedid := usedid || '','' || pid || '','';
-		end if;
-	end if;
+		END IF;
+	END IF;
     ELSE 
-	if num_val is not null then
-		if ( usedid ~ currentid) then
-		execute format(''update '' || table_name  || '' set '' || ''"'' || concept || ''" = '' ||  num_val || '' where pid = '' || pid );
-		else
-		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, subjectagemonths, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','' || subjectagemonths || '','''''' || gender || '''''','''''' ||  num_val || '''''')'');
+	IF num_val IS NOT NULL THEN
+		IF ( usedid ~ currentid) THEN
+		execute format(''UPDATE '' || table_name  || '' set '' || ''"'' || concept || ''" = '' ||  num_val || '' where pid = '' || pid );
+		ELSE
+		execute format(''INSERT INTO '' || table_name  || ''( pid, subjectageyears, subjectagemonths, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','' || subjectagemonths || '','''''' || gender || '''''','''''' ||  num_val || '''''')'');
 		usedid := usedid || '','' || pid ||'','';
-		end if;
-	end if;
-END case;
+		END IF;
+	END IF;
+END CASE;
 
-end loop;
+END LOOP;
 
--- by ucommenting/commenting one of these two lines the result is either stored in a CSV or in a table
-COPY (Select * From new_table) To ''/tmp/harmonised_clinical_data.csv'' With CSV DELIMITER '','' HEADER;
-execute format(''DROP TABLE IF EXISTS '' || table_name);
-
+BEGIN
+	COPY new_table FROM ''/tmp/harmonised_clinical_data.csv'' DELIMITER '','' CSV HEADER ; 
+EXCEPTION
+WHEN OTHERS 
+        THEN raise notice ''No such file /tmp/harmonised_clinical_data.csv'';
+END;
+COPY (SELECT * FROM new_table) TO ''/tmp/harmonised_clinical_data.csv'' WITH CSV DELIMITER '','' HEADER;
+EXECUTE FORMAT(''DROP TABLE IF EXISTS '' || table_name);
 END' language plpgsql;
 select pivotfunction();
 
