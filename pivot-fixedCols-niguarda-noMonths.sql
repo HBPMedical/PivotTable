@@ -26,8 +26,8 @@ query := ''CREATE TABLE '' || table_name || ''( pid integer, "rightinflatvent" t
 execute format(''DROP TABLE IF EXISTS '' || table_name);
 execute format(query);
 table_name := ''new_table'';
-for pid, startdate, concept, valtype, char_val, num_val, subjectageyears, subjectagemonths, gender in 
-	select observation_fact.patient_num, observation_fact.start_date, observation_fact.concept_cd, observation_fact.valtype_cd, observation_fact.tval_char, observation_fact.nval_num, visit_dimension.patient_age, extract(month from patient_dimension.birth_date), patient_dimension.sex_cd  
+for pid, startdate, concept, valtype, char_val, num_val, subjectageyears, gender in 
+	select observation_fact.patient_num, observation_fact.start_date, observation_fact.concept_cd, observation_fact.valtype_cd, observation_fact.tval_char, observation_fact.nval_num, visit_dimension.patient_age, patient_dimension.sex_cd  
 	from observation_fact, patient_dimension, visit_dimension where observation_fact.patient_num=patient_dimension.patient_num and visit_dimension.encounter_num = observation_fact.encounter_num and concept_cd != ''-1''
 loop
 currentid := '','' || pid || '','';
@@ -38,7 +38,7 @@ CASE
 		if ( usedid ~ currentid ) then
 		execute format(''update '' || table_name  || '' set '' || ''"'' || concept || ''" = '''''' ||  char_val || '''''' where pid = '' || pid );
 		else
-		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, subjectagemonths, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','' || subjectagemonths || '','''''' || gender || '''''','''''' ||  char_val || '''''')'');
+		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','''''' || gender || '''''','''''' ||  char_val || '''''')'');
 		usedid := usedid || '','' || pid || '','';
 		end if;
 	end if;
@@ -47,7 +47,7 @@ CASE
 		if ( usedid ~ currentid) then
 		execute format(''update '' || table_name  || '' set '' || ''"'' || concept || ''" = '' ||  num_val || '' where pid = '' || pid );
 		else
-		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, subjectagemonths, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','' || subjectagemonths || '','''''' || gender || '''''','''''' ||  num_val || '''''')'');
+		execute format(''insert into '' || table_name  || ''( pid, subjectageyears, gender, '' || ''"'' || concept || ''"'' || '') VALUES ('' || pid || '','' || subjectageyears || '','''''' || gender || '''''','''''' ||  num_val || '''''')'');
 		usedid := usedid || '','' || pid ||'','';
 		end if;
 	end if;
@@ -56,7 +56,7 @@ END case;
 end loop;
 
 -- by ucommenting/commenting one of these two lines the result is either stored in a CSV or in a table
-COPY (Select * From new_table) To ''/tmp/harmonised_clinical_data.csv'' With CSV DELIMITER '','' HEADER;
+COPY (Select * From new_table) To ''/tmp/harmonised_clinical_data_noMonths.csv'' With CSV DELIMITER '','' HEADER;
 execute format(''DROP TABLE IF EXISTS '' || table_name);
 
 END' language plpgsql;
