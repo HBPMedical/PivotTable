@@ -69,7 +69,7 @@ execute format(query_non_cde);
 
 for subjectcode, startdate, concept, valtype, char_val, num_val, subjectageyears, subjectage, gender, dataset in 
 	select observation_fact.patient_num, observation_fact.start_date, observation_fact.concept_cd, observation_fact.valtype_cd, observation_fact.tval_char, observation_fact.nval_num, round(visit_dimension.patient_age), visit_dimension.patient_age, patient_dimension.sex_cd , observation_fact.provider_id
-	from observation_fact, patient_dimension, visit_dimension, (select v.patient_num, v.encounter_num from (select patient_num, min(patient_age) mindate from visit_dimension group by patient_num) as foo, visit_dimension as v where foo.patient_num = v.patient_num and foo.mindate = v.patient_age) as encounter_num_with_min_age where observation_fact.patient_num=patient_dimension.patient_num and encounter_num_with_min_age.encounter_num = observation_fact.encounter_num and encounter_num_with_min_age.encounter_num = visit_dimension.encounter_num and encounter_num_with_min_age.patient_num = observation_fact.patient_num order by patient_num
+	from observation_fact, patient_dimension, visit_dimension where observation_fact.patient_num=patient_dimension.patient_num and visit_dimension.encounter_num = observation_fact.encounter_num and concept_cd != ''-1''
 LOOP
 currentid := '','' || subjectcode || '','';
 
@@ -135,14 +135,14 @@ CASE
 END CASE;
 END LOOP;
 BEGIN
-	COPY new_table_cde FROM ''/tmp/clm_data_cde.csv'' DELIMITER '','' CSV HEADER ; 
-	COPY new_table FROM ''/tmp/clm_data_other.csv'' DELIMITER '','' CSV HEADER ; 
+	COPY new_table_cde FROM ''/tmp/data_cde.csv'' DELIMITER '','' CSV HEADER ; 
+	COPY new_table FROM ''/tmp/data_other.csv'' DELIMITER '','' CSV HEADER ; 
 EXCEPTION
 WHEN OTHERS 
         THEN raise notice ''One of the files does not exist'';
 END;
-COPY (SELECT * FROM new_table_cde) TO ''/tmp/clm_data_cde.csv'' WITH CSV DELIMITER '','' HEADER;
-COPY (SELECT * FROM new_table) TO ''/tmp/clm_data_other.csv'' WITH CSV DELIMITER '','' HEADER;
+COPY (SELECT * FROM new_table_cde) TO ''/tmp/data_cde.csv'' WITH CSV DELIMITER '','' HEADER;
+COPY (SELECT * FROM new_table) TO ''/tmp/data_other.csv'' WITH CSV DELIMITER '','' HEADER;
 
 EXECUTE FORMAT(''DROP TABLE IF EXISTS '' || table_name_cde);
 EXECUTE FORMAT(''DROP TABLE IF EXISTS '' || table_name);
