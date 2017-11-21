@@ -25,7 +25,7 @@ query := ''CREATE TABLE '' || table_name || ''( pid integer, "rightinflatvent" t
 -- collect all hospital specific concept_cds in order to obtain the available columns
 for concept, valtype in 
 	select distinct on (concept_cd) concept_cd, valtype_cd 
-	from observation_fact where concept_cd != ''-1''
+	from observation_fact
 loop
 CASE
     WHEN ''T''=valtype 
@@ -48,7 +48,7 @@ execute format(query);
 table_name := ''new_table'';
 for pid, startdate, concept, valtype, char_val, num_val, subjectageyears, subjectagemonths, gender, dataset in 
 	select observation_fact.patient_num, observation_fact.start_date, observation_fact.concept_cd, observation_fact.valtype_cd, observation_fact.tval_char, observation_fact.nval_num, visit_dimension.patient_age, extract(month from patient_dimension.birth_date), patient_dimension.sex_cd , observation_fact.provider_id
-	from observation_fact, patient_dimension, visit_dimension where observation_fact.patient_num=patient_dimension.patient_num and visit_dimension.encounter_num = observation_fact.encounter_num and concept_cd != ''-1''
+	from observation_fact, patient_dimension, visit_dimension where observation_fact.patient_num=patient_dimension.patient_num and visit_dimension.encounter_num = observation_fact.encounter_num
 LOOP
 currentid := '','' || pid || '','';
 

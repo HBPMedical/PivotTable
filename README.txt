@@ -1,3 +1,13 @@
+20171121
+---------------
+- pivot_i2b2: contains old schema, creates one file with (old) cde and extra variables, does not consider baseline examination
+- pivot_i2b2_cde: cde schema, creates two files (one with cde variables and one with extra), considers only baseline examinations
+- pivot_i2b2_cde_noBaseline: same as "pivot_i2b2_cde" but does not consider baseline examinations
+- pivot_i2b2_cde_onPgAdmin: same as "pivot_i2b2_cde" that can be run (more easily) on pgAdmin
+- pivot_i2b2_cde_singleFile: cde schema, same as "pivot_i2b2_cde" that creates one single file with all variables (cde and extra), considers only baseline examinations
+- pivot_i2b2-noMonths: same as "pivot_i2b2", but in its schema there exist no subjectagemonths column
+
+
 20171120
 ---------------------------
 Renamed:
