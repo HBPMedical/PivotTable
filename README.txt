@@ -1,3 +1,8 @@
+20171213
+-----------------
+- pivot_i2b2_cde_SF_MinDate_onPgAdmin: creates the flat csv table considering for each concept_cd the oldest examination date (min(start_date)
+- pivot_i2b2_cde_SF_MinDate: same as above but runs on MIPMap psql
+
 20171121
 ---------------
 - pivot_i2b2: contains old schema, creates one file with (old) cde and extra variables, does not consider baseline examination
